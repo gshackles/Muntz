@@ -1,0 +1,4 @@
+Muntz
+=====
+
+Templated mocking helpers
