@@ -9,5 +9,8 @@ namespace MuntzDefinitions
         string ReturnsStringWithParameters(int i);
         Task<object> ReturnsTaskNoParameters();
         Task<object> ReturnsTaskWithParameters(int i, object o);
+        string StringPropertyWithGetter { get; }
+        string StringPropertyWithSetter { set; }
+        string StringPropertyWithGetterAndSetter { get; set; }
     }
 }

@@ -29,10 +29,20 @@ namespace <#= @interface.Namespace #>.Mocks
 	{
 <#+ 	foreach (var member in @interface.GetMembers()) 
 		{
-            // TODO: properties
-            if (member.MemberType == MemberTypes.Method)
+            if (member.MemberType == MemberTypes.Property)
+            {
+            	var propertyInfo = (PropertyInfo)member;
+            	var returnType = GetTypeString(propertyInfo.PropertyType);
+#>
+		public <#= returnType #> <#= propertyInfo.Name #> { get; set; }
+<#+
+            }
+            else if (member.MemberType == MemberTypes.Method)
             {
                 var methodInfo = (MethodInfo)member;
+                
+                if (methodInfo.IsSpecialName) continue;
+                
                 var returnType = GetTypeString(methodInfo.ReturnType);
                 var parameters = 
                     methodInfo

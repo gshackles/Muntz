@@ -65,5 +65,29 @@ namespace MuntzTests
 
             Assert.AreEqual("foo", result.Result);
         }
+
+        [Test]
+        public void StringPropertyWithGetter()
+        {
+            _testInterface.StringPropertyWithGetter = "foo";
+
+            Assert.AreEqual("foo", _testInterface.StringPropertyWithGetter);
+        }
+
+        [Test]
+        public void StringPropertyWithSetter()
+        {
+            _testInterface.StringPropertyWithSetter = "foo";
+
+            Assert.AreEqual("foo", _testInterface.StringPropertyWithSetter);
+        }
+
+        [Test]
+        public void StringPropertyWithGetterAndSetter()
+        {
+            _testInterface.StringPropertyWithGetterAndSetter = "foo";
+
+            Assert.AreEqual("foo", _testInterface.StringPropertyWithGetterAndSetter);
+        }
     }
 }

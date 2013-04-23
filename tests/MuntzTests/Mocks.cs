@@ -31,5 +31,8 @@ namespace MuntzDefinitions.Mocks
 		{
 			return ReturnsTaskWithParametersBody(i, o);
 		}
+		public string StringPropertyWithGetter { get; set; }
+		public string StringPropertyWithSetter { get; set; }
+		public string StringPropertyWithGetterAndSetter { get; set; }
 	}
 }
