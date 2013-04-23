@@ -5,15 +5,14 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{67A6BE4E-5E60-488F-A269-0121186D4602}</ProjectGuid>
+    <ProjectGuid>{211181B9-934D-4AE1-9350-26376BED00B3}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>DemoLibrary</RootNamespace>
-    <AssemblyName>DemoLibrary</AssemblyName>
+    <RootNamespace>MuntzTests</RootNamespace>
+    <AssemblyName>MuntzTests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
@@ -22,7 +21,6 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -31,14 +29,37 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Xml" />
+    <Reference Include="nunit.core, Version=2.6.0.12051, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.6.0.12051, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="nunit.core.interfaces, Version=2.6.0.12051, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Beer.cs" />
-    <Compile Include="IBeerSearchClient.cs" />
-    <Compile Include="SearchService.cs" />
-    <Compile Include="SearchXmlResponseParser.cs" />
+    <Compile Include="TestInterfaceTests.cs" />
+    <Compile Include="Mocks.cs">
+      <DependentUpon>Mocks.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="..\..\src\Muntz.include">
+      <Link>Muntz.include</Link>
+    </None>
+    <None Include="Mocks.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Mocks.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MuntzDefinitions\MuntzDefinitions.csproj">
+      <Project>{A4B9092C-7402-46DC-BB5B-C4E1A2A6C282}</Project>
+      <Name>MuntzDefinitions</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

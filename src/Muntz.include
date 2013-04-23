@@ -10,7 +10,7 @@ void MockAssembly(string assemblyPath, params string[] targetNamespaces)
 {
 	var assembly = Assembly.LoadFile(assemblyPath);
 	var interfaces = assembly.GetTypes().Where(type => type.IsInterface);
-	
+
     foreach (var @interface in interfaces)
 	{
     	if (targetNamespaces.Count() > 0 && !targetNamespaces.Any(@namespace => @interface.Namespace == @namespace || @interface.Namespace.StartsWith(@namespace + ".")))
@@ -53,7 +53,7 @@ namespace <#= @interface.Namespace #>.Mocks
                 if (methodInfo.ReturnType == typeof(void))
                 {
 #>
-		public Action<<#= parameterTypesString #>> <#= methodBodyName #> { get; set; }
+		public Action<#= string.IsNullOrWhiteSpace(parameterTypesString) ? "" : string.Format("<{0}>", parameterTypesString) #> <#= methodBodyName #> { get; set; }
 		public void <#= methodInfo.Name #>(<#= signatureString #>)
 		{
 			<#= methodBodyName #>(<#= parameterNamesString #>);
@@ -63,7 +63,7 @@ namespace <#= @interface.Namespace #>.Mocks
                 else
                 {
 #>
-		public Func<<#= string.IsNullOrWhiteSpace(parameterTypesString) ? "" : parameterTypesString #>, <#= returnType #>> <#= methodInfo.Name #>Body { get; set; }
+		public Func<<#= string.IsNullOrWhiteSpace(parameterTypesString) ? "" : parameterTypesString + ", " #><#= returnType #>> <#= methodInfo.Name #>Body { get; set; }
 		public <#= returnType #> <#= methodInfo.Name #>(<#= signatureString #>)
 		{
 			return <#= methodInfo.Name #>Body(<#= parameterNamesString #>);
