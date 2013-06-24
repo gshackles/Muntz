@@ -8,7 +8,7 @@
 <#+
 void MockAssembly(string assemblyPath, params string[] targetNamespaces)
 {
-	var assembly = Assembly.LoadFile(assemblyPath);
+	var assembly = Assembly.Load(File.ReadAllBytes(assemblyPath));
 	var interfaces = assembly.GetTypes().Where(type => type.IsInterface);
 
     foreach (var @interface in interfaces)
