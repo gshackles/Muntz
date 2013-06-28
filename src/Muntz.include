@@ -1,4 +1,5 @@
 <#@ template language="C#" hostspecific="true" #>
+<#@ assembly name="System.Core" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Linq" #>
@@ -6,35 +7,44 @@
 <#@ import namespace="System.Text.RegularExpressions" #>
 <#@ Output Extension="cs" #>
 <#+
-void MockAssembly(string assemblyPath, params string[] targetNamespaces)
+void MockAssembly(string assemblyPath, string assemblyFileName, string[] targetNamespaces = null, string[] targetInterfaces = null, string[] dependencyAssemblyFileNames = null)
 {
-	var assembly = Assembly.Load(File.ReadAllBytes(assemblyPath));
-	var interfaces = assembly.GetTypes().Where(type => type.IsInterface);
+    if (dependencyAssemblyFileNames != null)
+    {
+        foreach (var dependencyAssemblyFileName in dependencyAssemblyFileNames)
+            LoadAssembly(Path.Combine(assemblyPath, dependencyAssemblyFileName));
+    }
 
-    foreach (var @interface in interfaces)
-	{
-    	if (targetNamespaces.Count() > 0 && !targetNamespaces.Any(@namespace => @interface.Namespace == @namespace || @interface.Namespace.StartsWith(@namespace + ".")))
-        	continue;
+    var assembly = LoadAssembly(Path.Combine(assemblyPath, assemblyFileName));
+    var interfaces = assembly.GetTypes().Where(type => type.IsInterface);
     
-		string className = GetMockName(@interface);
-    	var methodBodyNames = new List<string>();
+    foreach (var @interface in interfaces)
+    {
+        if (targetNamespaces != null && !targetNamespaces.Any(@namespace => @interface.Namespace == @namespace || @interface.Namespace.StartsWith(@namespace + ".")))
+            continue;
+        
+        if (targetInterfaces != null && !targetInterfaces.Any(targetInterface => @interface.Name == targetInterface))
+            continue;
+
+        string className = GetMockName(@interface);
+        var methodBodyNames = new List<string>();
 #>
-using System;
 
 namespace <#= @interface.Namespace #>.Mocks
 {
-	using <#= @interface.Namespace #>;
-	
-	public partial class <#= className #> : <#= @interface.Name #>
-	{
-<#+ 	foreach (var member in @interface.GetMembers()) 
-		{
+    using System;
+    using <#= @interface.Namespace #>;
+    
+    public partial class <#= className #> : <#= @interface.Name #>
+    {
+<#+     foreach (var member in @interface.GetMembers()) 
+        {
             if (member.MemberType == MemberTypes.Property)
             {
-            	var propertyInfo = (PropertyInfo)member;
-            	var returnType = GetTypeString(propertyInfo.PropertyType);
+                var propertyInfo = (PropertyInfo)member;
+                var returnType = GetTypeString(propertyInfo.PropertyType);
 #>
-		public <#= returnType #> <#= propertyInfo.Name #> { get; set; }
+        public <#= returnType #> <#= propertyInfo.Name #> { get; set; }
 <#+
             }
             else if (member.MemberType == MemberTypes.Method)
@@ -63,30 +73,30 @@ namespace <#= @interface.Namespace #>.Mocks
                 if (methodInfo.ReturnType == typeof(void))
                 {
 #>
-		public Action<#= string.IsNullOrWhiteSpace(parameterTypesString) ? "" : string.Format("<{0}>", parameterTypesString) #> <#= methodBodyName #> { get; set; }
-		public void <#= methodInfo.Name #>(<#= signatureString #>)
-		{
-			<#= methodBodyName #>(<#= parameterNamesString #>);
-		}
+        public Action<#= string.IsNullOrWhiteSpace(parameterTypesString) ? "" : string.Format("<{0}>", parameterTypesString) #> <#= methodBodyName #> { get; set; }
+        public void <#= methodInfo.Name #>(<#= signatureString #>)
+        {
+            <#= methodBodyName #>(<#= parameterNamesString #>);
+        }
 <#+
                 }
                 else
                 {
 #>
-		public Func<<#= string.IsNullOrWhiteSpace(parameterTypesString) ? "" : parameterTypesString + ", " #><#= returnType #>> <#= methodInfo.Name #>Body { get; set; }
-		public <#= returnType #> <#= methodInfo.Name #>(<#= signatureString #>)
-		{
-			return <#= methodInfo.Name #>Body(<#= parameterNamesString #>);
-		}
+        public Func<<#= string.IsNullOrWhiteSpace(parameterTypesString) ? "" : parameterTypesString + ", " #><#= returnType #>> <#= methodInfo.Name #>Body { get; set; }
+        public <#= returnType #> <#= methodInfo.Name #>(<#= signatureString #>)
+        {
+            return <#= methodInfo.Name #>Body(<#= parameterNamesString #>);
+        }
 <#+
                 }
             }
-		}
+        }
 #>
-	}
+    }
 }
 <#+
-	}
+    }
 }
 
 string GetTypeString(Type type)
@@ -137,5 +147,10 @@ string GetMockName(Type interfaceType)
         name = name.Substring(1);
         
     return "Mock" + name;
+}
+
+Assembly LoadAssembly(string assemblyFilePath)
+{
+    return Assembly.Load(File.ReadAllBytes(assemblyFilePath));
 }
 #>

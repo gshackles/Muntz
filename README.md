@@ -20,12 +20,12 @@ It's very simple to get started with Muntz:
 
 3. For each assembly you want to generate mocks for, add a line to this new template file:
 ```
-<# MockAssembly(Host.ResolvePath("../Library/bin/Debug/Library.dll"));#>
+<# MockAssembly(Host.ResolvePath("../Library/bin/Debug/"), "Library.dll");#>
 ```
 
 By default, Muntz will generate mocks for any interface it finds in the assemblies you tell it about. You can override this behavior by providing a list of namespaces to include:
 
-    <# MockAssembly(Host.ResolvePath("../Library/bin/Debug/Library.dll", "NamespaceOne", "NamespaceTwo"));#>
+    <# MockAssembly(Host.ResolvePath("../Library/bin/Debug/Library.dll", targetNamespaces: new[] { "NamespaceOne", "NamespaceTwo" }));#>
 
 Using the Mocks
 ---------------

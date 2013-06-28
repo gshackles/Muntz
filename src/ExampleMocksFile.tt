@@ -1,4 +1,4 @@
 ﻿<#@ template language="C#" hostspecific="true" #>
 <#@ include file="Muntz.include" #>
 <#@ Output Extension="cs" #>
-<# MockAssembly(Host.ResolvePath("../../src/DemoLibrary/bin/debug/DemoLibrary.dll"));#>
+<# MockAssembly(Host.ResolvePath("../../src/DemoLibrary/bin/debug"), "DemoLibrary.dll");#>
